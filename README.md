@@ -4,7 +4,7 @@
 
 **[中文](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)**
 
-# AgentBrother
+# AgentBrother（龙哥）
 
 跨平台 Agent 管理框架 - 统一管理 OpenClaw、ZeroClaw 等 Agent 框架，方便用户所见即所得创建 AI 数字员工等智能体。
 
