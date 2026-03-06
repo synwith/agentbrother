@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="asset/logo2026.png" alt="AgentBrother Logo" width="200">
+</p>
+
 # AgentBrother
 
 跨平台 Agent 管理框架 - 统一管理 OpenClaw、ZeroClaw 等 Agent 框架，方便用户所见即所得创建 AI 数字员工等智能体。
