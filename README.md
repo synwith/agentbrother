@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="asset/logo2026.png" alt="AgentBrother Logo" width="200">
-</p>
+![AgentBrother Logo](asset/logo2026.png)
 
 # AgentBrother
 
