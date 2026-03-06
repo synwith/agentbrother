@@ -1,4 +1,6 @@
-<img src="asset/logo2026.png" alt="AgentBrother Logo" width="200" height="200">
+<p align="center">
+  <img src="asset/logo2026.png" alt="AgentBrother Logo" width="400" height="400">
+</p>
 
 # AgentBrother
 
