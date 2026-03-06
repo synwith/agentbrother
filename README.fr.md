@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="asset/logo2026.png" alt="AgentBrother Logo" width="400" height="400">
+  <img src="asset/logo_cool.png" alt="AgentBrother Logo" width="400" height="400">
 </p>
 
 **[中文](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)**
