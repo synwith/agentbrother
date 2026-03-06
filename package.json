@@ -1,0 +1,54 @@
+{
+  "name": "agentbrother",
+  "version": "1.0.0",
+  "description": "跨平台 Agent 管理框架 - 统一管理 OpenClaw、ZeroClaw 等 Agent 框架",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron .",
+    "build": "tsc",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "start:web": "node src/web/server.js",
+    "dev:web": "node src/web/server.js --watch"
+  },
+  "keywords": [
+    "agent",
+    "openclaw",
+    "zeroclaw",
+    "ai",
+    "electron"
+  ],
+  "author": "AgentBrother Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "electron-log": "^5.0.0",
+    "express": "^4.18.0",
+    "mammoth": "^1.11.0",
+    "pdf-parse": "^2.4.5",
+    "unzipper": "^0.12.3",
+    "ws": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.agentbrother.app",
+    "productName": "AgentBrother",
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

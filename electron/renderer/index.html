@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentBrother</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 左侧边栏 -->
+    <div class="sidebar">
+      <div class="logo">
+        <h1>AgentBrother</h1>
+      </div>
+      <nav class="nav-menu">
+        <div class="nav-item active" data-page="float">
+          <i class="fas fa-circle"></i>
+          <span>浮点</span>
+        </div>
+        <div class="nav-item" data-page="projects">
+          <i class="fas fa-briefcase"></i>
+          <span>项目</span>
+        </div>
+        <div class="nav-item" data-page="tasks">
+          <i class="fas fa-tasks"></i>
+          <span>任务</span>
+        </div>
+        <div class="nav-item" data-page="agents">
+          <i class="fas fa-robot"></i>
+          <span>代理</span>
+        </div>
+        <div class="nav-item" data-page="xclaw">
+          <i class="fas fa-cog"></i>
+          <span>配置</span>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">市场</div>
+          <div class="nav-item" data-page="skills">
+            <i class="fas fa-store"></i>
+            <span>技能</span>
+          </div>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">其他</div>
+          <div class="nav-item" data-page="settings">
+            <i class="fas fa-sliders-h"></i>
+            <span>软件设置</span>
+          </div>
+          <div class="nav-item" data-page="about">
+            <i class="fas fa-info-circle"></i>
+            <span>关于我们</span>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+      <div class="header">
+        <div class="header-title" id="page-title">浮点设置</div>
+        <div class="header-actions">
+          <button class="btn btn-primary" id="float-input-btn">
+            <i class="fas fa-comment-dots"></i> 显示浮点
+          </button>
+        </div>
+      </div>
+      
+      <div class="content-area">
+        <!-- 浮点输入页面 -->
+        <div class="page active" id="float-page">
+          <div style="background-color: #16213e; border-radius: 10px; padding: 20px; height: calc(100vh - 100px); display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h2 class="section-title">浮点</h2>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 10px;">
+                  <select id="framework-select" style="padding: 8px; border-radius: 6px; background-color: #0f3460; color: white; border: none;">
+                    <option value="openclaw" selected>OpenClaw</option>
+                    <option value="zeroclaw">ZeroClaw</option>
+                  </select>
+                  <select id="agent-select" style="padding: 8px; border-radius: 6px; background-color: #0f3460; color: white; border: none;">
+                    <option value="main" selected>main (默认)</option>
+                  </select>
+                </div>
+                <div id="framework-status" style="display: flex; align-items: center; gap: 5px;">
+                  <span class="status-indicator status-inactive" id="framework-status-indicator"></span>
+                  <span id="framework-status-text" style="font-size: 0.8rem; color: #a9a9a9;">未启动</span>
+                </div>
+              </div>
+            </div>
+            
+            <div id="chat-messages" style="flex: 1; overflow-y: auto; background-color: #0f3460; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+              <!-- 消息将在这里显示 -->
+              <div style="text-align: center; color: #a9a9a9; margin-top: 20px;">
+                <i class="fas fa-comment-dots" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                <p>开始与 AI 代理对话</p>
+                <p style="font-size: 0.8rem; margin-top: 5px;">默认使用 OpenClaw 的 main 代理</p>
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <div style="flex: 1; position: relative;">
+                <input type="text" id="message-input" placeholder="输入消息..." style="width: 100%; padding: 12px 40px 12px 12px; border: none; border-radius: 8px; background-color: #0f3460; color: white; font-size: 1rem; box-sizing: border-box;">
+                <button id="clear-file-btn" style="display: none; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #f72585; cursor: pointer; padding: 4px; font-size: 1rem;" title="清除文件">
+                  <i class="fas fa-times-circle"></i>
+                </button>
+              </div>
+              <button id="send-button" class="btn btn-primary" style="padding: 12px 24px;">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+            <div style="margin-top: 8px; font-size: 0.8rem; color: #a9a9a9;">
+              <i class="fas fa-info-circle"></i> 支持拖拽上传 .txt, .md, .doc, .docx, .pdf 文件（最大100KB）
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- 代理页面 -->
+        <div class="page" id="agents-page">
+          <h2 class="section-title">代理管理</h2>
+          <p>管理所有AI代理，包括OpenClaw和ZeroClaw的代理。</p>
+          
+          <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <button class="btn btn-primary" id="refresh-agents-btn">
+              <i class="fas fa-sync-alt"></i> 刷新代理列表
+            </button>
+            <button class="btn btn-primary" id="add-agent-btn">
+              <i class="fas fa-plus"></i> 添加代理
+            </button>
+          </div>
+          
+          <table class="agents-table">
+            <thead>
+              <tr>
+                <th>图标</th>
+                <th>名称</th>
+                <th>类型</th>
+                <th>框架</th>
+                <th>模型</th>
+                <th>Skills</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="agents-table-body">
+              <!-- 代理列表将通过JavaScript动态生成 -->
+              <tr>
+                <td colspan="8" style="text-align: center; color: #a9a9a9;">
+                  <i class="fas fa-spinner fa-spin"></i> 加载代理列表...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 代理编辑/添加模态框 -->
+        <div id="agent-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+          <div style="background-color: #16213e; border-radius: 10px; padding: 30px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3 id="agent-modal-title" style="color: #4cc9f0; margin: 0;">添加代理</h3>
+              <button id="close-agent-modal" style="background: none; border: none; color: #a9a9a9; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <form id="agent-form">
+              <input type="hidden" id="agent-id-hidden" value="">
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">代理ID (唯一标识)</label>
+                <input type="text" id="agent-id-input" required style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;" placeholder="例如: my-agent">
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">显示名称</label>
+                <input type="text" id="agent-name-input" required style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;" placeholder="例如: 我的代理">
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">图标 (emoji)</label>
+                <input type="text" id="agent-icon-input" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;" placeholder="例如: 🤖">
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">选择框架</label>
+                <select id="agent-framework-select" required style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                  <option value="openclaw">OpenClaw</option>
+                  <option value="zeroclaw">ZeroClaw</option>
+                </select>
+              </div>
+              
+              <!-- OpenClaw 特定配置 -->
+              <div id="openclaw-specific" style="margin-bottom: 15px;">
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">模型 (model.primary)</label>
+                  <input type="text" id="agent-model-input" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;" placeholder="例如: volcengine/doubao-seed-1-8-251228">
+                </div>
+              </div>
+              
+              <!-- ZeroClaw 特定配置 -->
+              <div id="zeroclaw-specific" style="display: none; margin-bottom: 15px;">
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">模型</label>
+                  <input type="text" id="agent-zeroclaw-model-input" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;" placeholder="例如: volcengine/doubao-seed-1-8-251228">
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">系统提示词 (System Prompt)</label>
+                <textarea id="agent-prompt-input" rows="4" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white; resize: vertical;" placeholder="输入系统提示词，定义代理的行为和角色..."></textarea>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">技能 (多选)</label>
+                <div style="background-color: #0f3460; border-radius: 6px; padding: 10px;">
+                  <label style="display: block; margin-bottom: 5px; cursor: pointer;">
+                    <input type="checkbox" name="skills" value="chat" checked> 基础聊天
+                  </label>
+                  <label style="display: block; margin-bottom: 5px; cursor: pointer;">
+                    <input type="checkbox" name="skills" value="file"> 文件处理
+                  </label>
+                  <label style="display: block; margin-bottom: 5px; cursor: pointer;">
+                    <input type="checkbox" name="skills" value="web"> 网络搜索
+                  </label>
+                  <label style="display: block; margin-bottom: 5px; cursor: pointer;">
+                    <input type="checkbox" name="skills" value="image"> 图像生成
+                  </label>
+                  <label style="display: block; cursor: pointer;">
+                    <input type="checkbox" name="skills" value="code"> 代码执行
+                  </label>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">高级配置 (JSON格式)</label>
+                <textarea id="agent-config-input" rows="3" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white; resize: vertical; font-family: monospace;" placeholder='{"temperature": 0.7, "max_tokens": 2000}'></textarea>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">完整配置预览 (只读)</label>
+                <textarea id="agent-raw-config" rows="8" readonly style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #1a1a2e; color: #a9a9a9; resize: vertical; font-family: monospace; font-size: 0.8rem;"></textarea>
+              </div>
+              
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" id="cancel-agent-btn" class="btn btn-secondary">取消</button>
+                <button type="submit" class="btn btn-primary">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 任务页面 -->
+        <div class="page" id="tasks-page">
+          <h2 class="section-title">任务管理</h2>
+          <p>管理定时任务和项目任务，让代理自动完成工作。</p>
+          
+          <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <button class="btn btn-primary" id="add-task-btn">
+              <i class="fas fa-plus"></i> 添加任务
+            </button>
+            <button class="btn btn-secondary" id="refresh-tasks-btn">
+              <i class="fas fa-sync-alt"></i> 刷新任务
+            </button>
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+              <button class="filter-btn active" data-filter="all">全部任务</button>
+              <button class="filter-btn" data-filter="pending">待执行</button>
+              <button class="filter-btn" data-filter="running">执行中</button>
+              <button class="filter-btn" data-filter="completed">已完成</button>
+              <button class="filter-btn" data-filter="failed">失败</button>
+            </div>
+          </div>
+          
+          <div id="tasks-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            <!-- 任务卡片将通过JavaScript动态生成 -->
+            <div style="grid-column: 1 / -1; text-align: center; color: #a9a9a9; padding: 40px;">
+              <i class="fas fa-spinner fa-spin"></i> 加载任务列表...
+            </div>
+          </div>
+        </div>
+
+        <!-- 配置页面 -->
+        <div class="page" id="xclaw-page">
+          <h2 class="section-title">配置</h2>
+          <p>管理所有支持的Claw框架配置。</p>
+          
+          <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <div style="flex: 1; background-color: #16213e; border-radius: 10px; padding: 20px;">
+              <h3 style="color: #4cc9f0; margin-bottom: 15px;">OpenClaw</h3>
+              <div style="margin-bottom: 20px;">
+                <p><strong>版本:</strong> 1.0.0</p>
+                <p><strong>路径:</strong> <span id="openclaw-path-display">~/Documents/trae_projects/openclaw_test/openclaw.sh</span></p>
+                <p><strong>状态:</strong> <span class="status-indicator" id="openclaw-status-indicator" style="display: inline-block;"></span> <span id="openclaw-status">已安装</span></p>
+                <p><strong>Gateway:</strong> <span id="openclaw-gateway-status">未运行</span></p>
+              </div>
+              
+              <div id="openclaw-download-section" style="margin-bottom: 20px; display: none;">
+                <h4 style="color: #a9a9a9; margin-bottom: 10px;">下载安装</h4>
+                <div style="background-color: #0f3460; border-radius: 8px; padding: 15px;">
+                  <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">openclaw源码路径</label>
+                    <div style="display: flex; gap: 10px;">
+                      <input type="text" id="openclaw-download-path" placeholder="选择源码路径" style="flex: 1; padding: 8px; border-radius: 6px; background-color: #1a1a2e; color: white; border: 1px solid #3a0ca3;">
+                      <button class="btn btn-secondary" id="openclaw-browse-path" style="padding: 8px 16px;">浏览</button>
+                    </div>
+                  </div>
+                  <div id="openclaw-progress" style="margin-bottom: 10px; display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #a9a9a9;">
+                      <span id="openclaw-progress-status">准备下载...</span>
+                      <span id="openclaw-progress-percent">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: #1a1a2e; border-radius: 4px; overflow: hidden;">
+                      <div id="openclaw-progress-bar" style="width: 0%; height: 100%; background-color: #4cc9f0; transition: width 0.3s;"></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="openclaw-install-btn">一键安装</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="openclaw-config-section" style="margin-bottom: 20px;">
+                <h4 style="color: #a9a9a9; margin-bottom: 10px;">框架配置</h4>
+                <div style="background-color: #0f3460; border-radius: 8px; padding: 15px;">
+                  <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">Gateway端口</label>
+                    <input type="number" id="openclaw-port" value="18789" style="width: 100%; padding: 8px; border-radius: 6px; background-color: #1a1a2e; color: white; border: 1px solid #3a0ca3;">
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">API密钥</label>
+                    <input type="password" id="openclaw-api-key" value="sk-xxxxxxxxxxxxxxxx" style="width: 100%; padding: 8px; border-radius: 6px; background-color: #1a1a2e; color: white; border: 1px solid #3a0ca3;">
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" id="openclaw-start-btn">启动Gateway</button>
+                <button class="btn btn-primary" id="openclaw-save-config">保存配置</button>
+              </div>
+            </div>
+            
+            <div style="flex: 1; background-color: #16213e; border-radius: 10px; padding: 20px;">
+              <h3 style="color: #4cc9f0; margin-bottom: 15px;">ZeroClaw</h3>
+              <div style="margin-bottom: 20px;">
+                <p><strong>版本:</strong> 1.0.0</p>
+                <p><strong>路径:</strong> <span id="zeroclaw-path-display">~/Documents/trae_projects/zeroclaw_test/zeroclaw-main/target/release-fast/zeroclaw</span></p>
+                <p><strong>状态:</strong> <span class="status-indicator" id="zeroclaw-status-indicator" style="display: inline-block;"></span> <span id="zeroclaw-status">已安装</span></p>
+              </div>
+              
+              <div id="zeroclaw-download-section" style="margin-bottom: 20px; display: none;">
+                <h4 style="color: #a9a9a9; margin-bottom: 10px;">下载安装</h4>
+                <div style="background-color: #0f3460; border-radius: 8px; padding: 15px;">
+                  <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">zeroclaw源码路径</label>
+                    <div style="display: flex; gap: 10px;">
+                      <input type="text" id="zeroclaw-download-path" placeholder="选择源码路径" style="flex: 1; padding: 8px; border-radius: 6px; background-color: #1a1a2e; color: white; border: 1px solid #3a0ca3;">
+                      <button class="btn btn-secondary" id="zeroclaw-browse-path" style="padding: 8px 16px;">浏览</button>
+                    </div>
+                  </div>
+                  <div id="zeroclaw-progress" style="margin-bottom: 10px; display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #a9a9a9;">
+                      <span id="zeroclaw-progress-status">准备下载...</span>
+                      <span id="zeroclaw-progress-percent">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: #1a1a2e; border-radius: 4px; overflow: hidden;">
+                      <div id="zeroclaw-progress-bar" style="width: 0%; height: 100%; background-color: #4cc9f0; transition: width 0.3s;"></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="zeroclaw-install-btn">一键安装</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="zeroclaw-config-section" style="margin-bottom: 20px;">
+                <h4 style="color: #a9a9a9; margin-bottom: 10px;">框架配置</h4>
+                <div style="background-color: #0f3460; border-radius: 8px; padding: 15px;">
+                  <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">API密钥</label>
+                    <input type="password" id="zeroclaw-api-key" value="sk-xxxxxxxxxxxxxxxx" style="width: 100%; padding: 8px; border-radius: 6px; background-color: #1a1a2e; color: white; border: 1px solid #3a0ca3;">
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">默认模型</label>
+                    <input type="text" id="zeroclaw-default-model" value="volcengine/doubao-seed-1-8-251228" style="width: 100%; padding: 8px; border-radius: 6px; background-color: #1a1a2e; color: white; border: 1px solid #3a0ca3;">
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" id="zeroclaw-start-btn">启动服务</button>
+                <button class="btn btn-primary" id="zeroclaw-save-config">保存配置</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技能页面 -->
+        <div class="page" id="skills-page">
+          <h2 class="section-title">技能</h2>
+          <p>管理和使用AI技能，增强您的数字员工能力。</p>
+          
+          <div class="skill-tabs">
+            <button class="tab-btn active" data-tab="local">本地技能</button>
+            <button class="tab-btn" data-tab="cloud">云端技能</button>
+          </div>
+          
+          <div class="tab-content" id="local-skills">
+            <div class="skills-container">
+              <!-- 本地技能将通过JavaScript动态生成 -->
+              <div style="grid-column: 1 / -1; text-align: center; color: #a9a9a9; padding: 40px;">
+                <i class="fas fa-spinner fa-spin"></i> 加载本地技能...
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="cloud-skills" style="display:none">
+            <div class="skills-container">
+              <!-- 云端技能将通过JavaScript动态生成 -->
+              <div style="grid-column: 1 / -1; text-align: center; color: #a9a9a9; padding: 40px;">
+                <i class="fas fa-spinner fa-spin"></i> 加载云端技能...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 设置页面 -->
+        <div class="page" id="settings-page">
+          <h2 class="section-title">设置</h2>
+          
+          <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <div style="flex: 1; background-color: #16213e; border-radius: 10px; padding: 20px;">
+              <h3 style="color: #4cc9f0; margin-bottom: 15px;">浮点输入设置</h3>
+              
+              <div class="form-group">
+                <label for="float-enabled">启用浮点输入窗口</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="float-enabled" checked>
+                  <span>启用全局浮点窗口</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="float-shortcut">全局快捷方式</label>
+                <input type="text" id="float-shortcut" value="Cmd+Shift+A" placeholder="输入快捷方式">
+              </div>
+              
+              <div class="form-group">
+                <label for="float-position">位置</label>
+                <select id="float-position">
+                  <option value="top-left">左上角</option>
+                  <option value="top-right" selected>右上角</option>
+                  <option value="bottom-left">左下角</option>
+                  <option value="bottom-right">右下角</option>
+                  <option value="center">中心</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="float-opacity">透明度</label>
+                <input type="range" id="float-opacity" min="0.1" max="1" step="0.1" value="0.9">
+                <span id="opacity-value">90%</span>
+              </div>
+              
+              <div class="form-group">
+                <label for="float-always-on-top">始终置顶</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="float-always-on-top" checked>
+                  <span>窗口始终显示在最前面</span>
+                </div>
+              </div>
+              
+              <button class="btn btn-primary" id="save-float-settings">保存设置</button>
+              <button class="btn btn-secondary" id="test-float-input" style="margin-left: 10px;">
+                <i class="fas fa-play"></i> 测试浮点输入
+              </button>
+            </div>
+            
+            <div style="flex: 1; background-color: #16213e; border-radius: 10px; padding: 20px;">
+              <h3 style="color: #4cc9f0; margin-bottom: 15px;">应用设置</h3>
+              
+              <div class="form-group">
+                <label for="app-theme">主题</label>
+                <select id="app-theme">
+                  <option value="dark" selected>深色</option>
+                  <option value="light">浅色</option>
+                  <option value="auto">自动</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="app-language">语言</label>
+                <select id="app-language">
+                  <option value="zh-CN" selected>中文 (简体)</option>
+                  <option value="zh-TW">中文 (繁體)</option>
+                  <option value="en-US">English (US)</option>
+                  <option value="en-GB">English (UK)</option>
+                  <option value="ja-JP">日本語</option>
+                  <option value="ko-KR">한국어</option>
+                  <option value="fr-FR">Français</option>
+                  <option value="de-DE">Deutsch</option>
+                  <option value="es-ES">Español</option>
+                  <option value="ru-RU">Русский</option>
+                  <option value="pt-BR">Português (Brasil)</option>
+                  <option value="it-IT">Italiano</option>
+                  <option value="ar-SA">العربية</option>
+                  <option value="hi-IN">हिन्दी</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="app-update">自动更新</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="app-update" checked>
+                  <span>启用自动更新</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="app-notifications">通知</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="app-notifications" checked>
+                  <span>启用通知</span>
+                </div>
+              </div>
+              
+              <button class="btn btn-primary" id="save-app-settings">保存设置</button>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- 项目管理页面 -->
+        <div class="page" id="projects">
+          <div class="projects-container">
+            <div class="projects-header">
+              <h2>项目管理</h2>
+              <button class="btn btn-primary" id="create-project-btn">创建新项目</button>
+            </div>
+            <div class="projects-list" id="projects-list">
+              <!-- 项目列表将通过JavaScript动态生成 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 创建项目页面 -->
+        <div class="page" id="create-project-page">
+          <div class="project-form-container">
+            <h2>创建新项目</h2>
+            <form id="create-project-form">
+              <div class="form-group">
+                <label for="project-name">项目名称</label>
+                <input type="text" id="project-name" class="form-control" placeholder="请输入项目名称">
+              </div>
+              <div class="form-group">
+                <label for="project-description">项目描述</label>
+                <textarea id="project-description" class="form-control" rows="3" placeholder="请输入项目描述"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="project-path">项目路径</label>
+                <input type="text" id="project-path" class="form-control" placeholder="请输入项目工作目录路径">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-create-project-btn">取消</button>
+                <button type="button" class="btn btn-primary" id="save-project-btn">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 项目详情页面 -->
+        <div class="page" id="project-detail-page">
+          <div class="project-detail-container">
+            <div class="project-detail-header">
+              <h2 id="project-detail-name">项目名称</h2>
+              <div class="project-detail-actions">
+                <button class="btn btn-secondary" onclick="openProjectChat(localStorage.getItem('current_project_id'))">进入聊天</button>
+                <button class="btn btn-secondary" onclick="showPage('projects')">返回列表</button>
+              </div>
+            </div>
+            <div class="project-detail-info">
+              <p><strong>描述:</strong> <span id="project-detail-description"></span></p>
+              <p><strong>路径:</strong> <span id="project-detail-path"></span></p>
+              <p><strong>创建时间:</strong> <span id="project-detail-created"></span></p>
+            </div>
+            <div class="project-agents-section">
+              <div class="section-header">
+                <h3>项目角色</h3>
+                <button class="btn btn-primary" onclick="showPage('add-agent-page')">添加角色</button>
+              </div>
+              <div class="project-agents-list" id="project-agents-list">
+                <!-- 代理列表将通过JavaScript动态生成 -->
+              </div>
+            </div>
+            
+            <div class="project-documents-section">
+              <div class="section-header">
+                <h3>项目文档</h3>
+                <button class="btn btn-primary" id="upload-document-btn">上传文档</button>
+              </div>
+              <div class="document-upload-area" id="document-upload-area">
+                <p>拖拽文件到此处或点击上传</p>
+                <input type="file" id="document-file-input" multiple style="display: none;">
+              </div>
+              <div class="project-documents-list" id="project-documents-list">
+                <!-- 文档列表将通过JavaScript动态生成 -->
+              </div>
+            </div>
+            
+            <div class="project-tasks-section">
+              <div class="section-header">
+                <h3>项目任务</h3>
+                <button class="btn btn-primary" id="create-task-btn">创建任务</button>
+              </div>
+              <div class="project-tasks-list" id="project-tasks-list">
+                <!-- 任务列表将通过JavaScript动态生成 -->
+              </div>
+            </div>
+            
+            <div class="project-workspaces-section">
+              <div class="section-header">
+                <h3>代理工作区域</h3>
+                <div style="display: flex; gap: 10px;">
+                  <button class="btn btn-primary" id="init-workspaces-btn">初始化工作区域</button>
+                  <button class="btn btn-secondary" id="view-learning-status-btn">查看学习状态</button>
+                </div>
+              </div>
+              <div class="agent-workspaces-container" id="agent-workspaces-container">
+                <!-- 代理工作区域将通过JavaScript动态生成 -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 添加代理页面 -->
+        <div class="page" id="add-agent-page">
+          <div class="add-agent-container">
+            <h2>添加代理到项目</h2>
+            <form id="add-agent-form">
+              <div class="form-group">
+                <label for="add-agent-framework">框架</label>
+                <select id="add-agent-framework" class="form-control">
+                  <option value="openclaw">OpenClaw</option>
+                  <option value="zeroclaw">ZeroClaw</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="add-agent-select">代理</label>
+                <select id="add-agent-select" class="form-control">
+                  <!-- 代理列表将通过JavaScript动态生成 -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="add-agent-role">角色</label>
+                <input type="text" id="add-agent-role" class="form-control" placeholder="例如: AI CEO, AI CTO, AI运营官">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="showPage('project-detail-page')">取消</button>
+              <button type="button" class="btn btn-primary" onclick="addRoleToProject()">添加</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 项目聊天页面 -->
+        <div class="page" id="project-chat-page">
+          <div class="project-chat-container">
+            <div class="project-chat-header">
+              <h2 id="project-chat-name">项目聊天</h2>
+              <div class="project-chat-actions">
+                <button class="btn btn-secondary" onclick="viewAgentEvolutionStatus(localStorage.getItem('current_project_chat_id'))">查看进化状态</button>
+                <button class="btn btn-primary" onclick="manuallyTriggerEvolution(localStorage.getItem('current_project_chat_id'))">触发进化</button>
+                <button class="btn btn-secondary" onclick="showPage('project-detail-page')">返回项目</button>
+              </div>
+            </div>
+            <div class="project-chat-main">
+              <div class="project-chat-messages" id="project-chat-messages">
+                <!-- 聊天消息将通过JavaScript动态生成 -->
+              </div>
+              <div class="project-chat-sidebar">
+                <div class="role-list-container">
+                  <h3>项目成员</h3>
+                  <div id="project-role-list" class="role-list">
+                    <!-- 角色列表将通过JavaScript动态生成 -->
+                  </div>
+                </div>
+                <div class="role-mention-help">
+                  <p>💡 提示：输入框中使用 @角色名 或 @所有人 来提及</p>
+                </div>
+              </div>
+            </div>
+            <div class="project-chat-input-container">
+              <div class="input-wrapper">
+                <input type="text" id="project-chat-input" class="project-chat-input" placeholder="输入消息... 使用 @角色名 或 @所有人 来提及">
+                <button class="btn btn-secondary btn-attach" onclick="document.getElementById('project-chat-file-input').click()" title="上传文档">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="project-chat-file-input" style="display: none;" accept=".txt,.doc,.docx,.pdf">
+              </div>
+              <button class="btn btn-primary" onclick="sendProjectChatMessage()">发送</button>
+            </div>
+            <div id="project-chat-file-info" class="file-info" style="display: none;">
+              <span class="file-name"></span>
+              <button class="btn btn-sm btn-danger" onclick="clearProjectChatFile()">×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 任务编辑/添加模态框 -->
+        <div id="task-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+          <div style="background-color: #16213e; border-radius: 10px; padding: 30px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3 id="task-modal-title" style="color: #4cc9f0; margin: 0;">添加任务</h3>
+              <button id="close-task-modal" style="background: none; border: none; color: #a9a9a9; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <form id="task-form">
+              <input type="hidden" id="task-id-hidden" value="">
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">任务名称</label>
+                <input type="text" id="task-name-input" required style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;" placeholder="例如: 每日报告生成">
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">任务描述</label>
+                <textarea id="task-description-input" rows="3" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white; resize: vertical;" placeholder="详细描述任务内容..."></textarea>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">任务类型</label>
+                <select id="task-type-input" required style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                  <option value="manual">手动任务</option>
+                  <option value="scheduled">定时任务</option>
+                  <option value="project">项目任务</option>
+                </select>
+              </div>
+              
+              <div id="scheduled-task-config" style="display: none; margin-bottom: 15px;">
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">执行时间</label>
+                  <input type="datetime-local" id="task-schedule-time" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">重复周期</label>
+                  <select id="task-repeat-interval" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                    <option value="none">不重复</option>
+                    <option value="daily">每天</option>
+                    <option value="weekly">每周</option>
+                    <option value="monthly">每月</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div id="project-task-config" style="display: none; margin-bottom: 15px;">
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">关联项目</label>
+                  <select id="task-project-select" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                    <option value="">选择项目...</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">执行代理</label>
+                <select id="task-agent-select" required style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                  <option value="">选择代理...</option>
+                </select>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">任务内容</label>
+                <textarea id="task-content-input" rows="4" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white; resize: vertical;" placeholder="输入要发送给代理的任务内容..."></textarea>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #a9a9a9;">优先级</label>
+                <select id="task-priority-input" style="width: 100%; padding: 10px; border: none; border-radius: 6px; background-color: #0f3460; color: white;">
+                  <option value="low">低</option>
+                  <option value="medium" selected>中</option>
+                  <option value="high">高</option>
+                  <option value="urgent">紧急</option>
+                </select>
+              </div>
+              
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" id="cancel-task-btn" class="btn btn-secondary">取消</button>
+                <button type="submit" class="btn btn-primary">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 关于我们页面 -->
+        <div class="page" id="about-page">
+          <div class="about-container">
+            <h2>关于 AgentBrother</h2>
+            <p>AgentBrother是一个跨平台的 Agent 管理框架，旨在统一管理 OpenClaw、ZeroClaw 等 Agent 框架，方便用户所见即所得创建 AI 数字员工等智能体。</p>
+            <p>我们的目标是简化 AI 代理的创建和管理流程，降低使用门槛，让更多人能够享受 AI 技术带来的便利。</p>
+            <p>AgentBrother 支持 Mac、Windows、Web 和移动设备，提供一致的使用体验。</p>
+            <div class="author-info">
+              <h3>作者信息</h3>
+              <p>陆再谋（Nil Lu）</p>
+              <p>有为以续命，无为以续性。</p>
+              <p>邮箱: <a href="mailto:synwith@gmail.com" style="color: #4cc9f0;">synwith@gmail.com</a></p>
+            </div>
+            <div class="version-info">版本: 1.0.0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+  <script src="framework.js"></script>
+  <script src="floatInput.js"></script>
+  <script src="agents.js"></script>
+  <script src="projects.js"></script>
+  <script src="tasks.js"></script>
+  <script src="skills.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
