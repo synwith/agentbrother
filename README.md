@@ -4,18 +4,20 @@
 
 **[中文](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)**
 
-# AgentBrother（龙哥）
+# 龙哥
 
 跨平台 Agent 管理框架 - 统一管理 OpenClaw、ZeroClaw 等 Agent 框架，方便用户所见即所得创建 AI 数字员工等智能体。
 
 ## 项目目的
 
-AgentBrother 的核心目标是为用户提供一个统一的、跨平台的界面，用于管理和使用各种 AI Agent 框架，如 OpenClaw 和 ZeroClaw。通过 AgentBrother，用户可以：
+龙哥的核心目标是为用户提供一个统一的、跨平台的界面，用于管理和使用各种 AI Agent 框架，如 OpenClaw 和 ZeroClaw。通过龙哥，用户可以：
 
 - 统一管理多个 Agent 框架，无需在不同工具之间切换
 - 所见即所得地创建、配置和使用 AI 数字员工
 - 在不同平台（Mac、Windows、Web、手机）上获得一致的使用体验
 - 简化 Agent 的创建和管理流程，降低使用门槛
+
+龙哥不只是为了管理龙虾和螃蟹，更是为了让普通用户轻松创作出好玩、有趣、有用的 AI 代理数字人、数字宠物等。我们给每个 Agent 赋予独特的情感和个性，让它们成为你生活中的得力助手和伙伴！
 
 ## 功能特性
 
