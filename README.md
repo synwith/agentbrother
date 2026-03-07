@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="asset/logo_cool.png" alt="AgentBrother Logo" width="400" height="400">
+  <img src="asset/logo2026.png" alt="AgentBrother Logo" width="400" height="400">
 </p>
 
 **[中文](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)**
 
-# 龙哥
+# 龙哥（AgentBrother）
 
 跨平台 Agent 管理框架 - 统一管理 OpenClaw、ZeroClaw 等 Agent 框架，方便用户所见即所得创建 AI 数字员工等智能体。
 
