@@ -45,24 +45,24 @@
   <img src="asset/screenshot/1.png" alt="主界面" width="800">
 </p>
 
+### 项目管理
+<p align="center">
+  <img src="asset/screenshot/2.png" alt="项目管理" width="800">
+</p>
+
+### 任务管理
+<p align="center">
+  <img src="asset/screenshot/3.png" alt="任务管理" width="800">
+</p>
+
 ### 代理管理
 <p align="center">
-  <img src="asset/screenshot/2.png" alt="代理管理" width="800">
+  <img src="asset/screenshot/4.png" alt="代理管理" width="800">
 </p>
 
-### 配置消耗
+### 项目任务
 <p align="center">
-  <img src="asset/screenshot/3.png" alt="配置消耗" width="800">
-</p>
-
-### 浮点输入
-<p align="center">
-  <img src="asset/screenshot/4.png" alt="浮点输入" width="800">
-</p>
-
-### 代理详情
-<p align="center">
-  <img src="asset/screenshot/5.png" alt="代理详情" width="800">
+  <img src="asset/screenshot/5.png" alt="项目任务" width="800">
 </p>
 
 ### 任务管理
