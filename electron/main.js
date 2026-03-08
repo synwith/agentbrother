@@ -6,7 +6,9 @@ import { homedir } from "os";
 import fs from "fs";
 import http from "http";
 import https from "https";
+import crypto from "crypto";
 import unzipper from 'unzipper';
+import WebSocket from 'ws';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,29 +42,30 @@ async function initAgentBrother() {
     console.log('AgentBrother initialized successfully');
   } catch (error) {
     console.error('Failed to initialize AgentBrother:', error);
-    // 尝试直接使用命令行方式作为回退
+    // 尝试直接使用Gateway方式作为回退
     agentBrother = {
       sendMessage: async (framework, agentId, message) => {
         return new Promise((resolve, reject) => {
           try {
-            let proc;
             if (framework === "zeroclaw") {
               if (!frameworkStatus.zeroclaw.path || !fs.existsSync(frameworkStatus.zeroclaw.path)) {
                 throw new Error("ZeroClaw executable not found. Please check the path in settings.");
               }
               // 使用bash来执行命令
-              proc = spawn('bash', ['-c', frameworkStatus.zeroclaw.path + ' agent --message "' + message + '"'], {env: {...process.env, ARK_API_KEY: process.env.ARK_API_KEY}});
+              const proc = spawn('bash', ['-c', frameworkStatus.zeroclaw.path + ' agent --message "' + message + '"'], {env: {...process.env, ARK_API_KEY: process.env.ARK_API_KEY}});
+              let out = ""; 
+              proc.stdout.on("data", d => out += d); 
+              proc.stderr.on("data", d => out += d); 
+              proc.on("close", c => c === 0 ? resolve({content: out}) : reject(new Error(out)));
+              proc.on("error", (error) => {
+                reject(new Error(`Error executing ${framework}: ${error.message}`));
+              });
             } else {
-              const openClawPath = getOpenClawPath();
-              proc = spawnOpenClawAgent(message, agentId, openClawPath);
+              // 使用Gateway发送消息
+              sendMessageToOpenClawViaGateway(agentId, message)
+                .then(response => resolve({content: response}))
+                .catch(error => reject(error));
             }
-            let out = ""; 
-            proc.stdout.on("data", d => out += d); 
-            proc.stderr.on("data", d => out += d); 
-            proc.on("close", c => c === 0 ? resolve({content: out}) : reject(new Error(out)));
-            proc.on("error", (error) => {
-              reject(new Error(`Error executing ${framework}: ${error.message}`));
-            });
           } catch (error) {
             reject(error);
           }
@@ -348,28 +351,206 @@ ipcMain.handle("get-agents", async (e, fw) => {
     return [];
   }
 });
+// 通过WebSocket与Gateway通信
+async function sendMessageToOpenClawViaGateway(agentId, message) {
+  return new Promise((resolve, reject) => {
+    // 读取OpenClaw设备配置
+    const deviceConfigPath = path.join(homedir(), '.openclaw', 'identity', 'device.json');
+    const deviceAuthPath = path.join(homedir(), '.openclaw', 'identity', 'device-auth.json');
+    
+    let deviceId, publicKey, privateKey, authToken;
+    
+    try {
+        const deviceConfig = JSON.parse(fs.readFileSync(deviceConfigPath, 'utf8'));
+        deviceId = deviceConfig.deviceId;
+        publicKey = deviceConfig.publicKeyPem;
+        privateKey = deviceConfig.privateKeyPem;
+        
+        const deviceAuth = JSON.parse(fs.readFileSync(deviceAuthPath, 'utf8'));
+        authToken = deviceAuth.tokens?.operator?.token;
+      } catch (error) {
+        console.error('读取OpenClaw设备配置失败:', error);
+        reject(new Error('无法读取OpenClaw设备配置'));
+        return;
+      }
+
+      // 生成设备签名的函数
+      function generateSignature(nonce, privateKey) {
+        try {
+          const sign = crypto.createSign('SHA256');
+          sign.write(nonce);
+          sign.end();
+          return sign.sign(privateKey, 'base64');
+        } catch (error) {
+          console.error('生成签名失败:', error);
+          return nonce; // 失败时使用nonce作为签名
+        }
+      }
+
+    const ws = new WebSocket('ws://localhost:18789');
+    let requestId = 'req_' + Date.now();
+    let connected = false;
+    let challengeReceived = false;
+    let nonce = '';
+
+    ws.on('open', () => {
+      console.log('WebSocket连接已建立');
+      connected = true;
+    });
+
+    ws.on('message', (data) => {
+      try {
+        const wsMessage = JSON.parse(data);
+        
+        if (wsMessage.type === 'event' && wsMessage.event === 'connect.challenge') {
+          // 收到连接挑战
+          challengeReceived = true;
+          nonce = wsMessage.payload.nonce;
+          
+          // 生成设备签名
+          const signature = generateSignature(nonce, privateKey);
+          
+          // 发送连接请求（使用真实的设备身份验证信息）
+          const connectRequest = {
+            type: 'req',
+            id: requestId,
+            method: 'connect',
+            params: {
+              minProtocol: 3,
+              maxProtocol: 3,
+              client: {
+                id: 'cli',
+                version: '1.0.0',
+                platform: process.platform,
+                mode: 'cli'
+              },
+              role: 'operator',
+              scopes: ['operator.read', 'operator.write'],
+              auth: { token: authToken || '' },
+              device: {
+                id: deviceId,
+                nonce: nonce,
+                publicKey: publicKey,
+                signature: signature,
+                signedAt: Date.now()
+              }
+            }
+          };
+          ws.send(JSON.stringify(connectRequest));
+        } else if (wsMessage.type === 'res' && wsMessage.id === requestId) {
+          if (wsMessage.ok) {
+            // 连接成功，发送聊天请求
+            const chatRequestId = 'chat_req_' + Date.now();
+            const chatRequest = {
+              type: 'req',
+              id: chatRequestId,
+              method: 'chat.completions.create',
+              params: {
+                model: 'openclaw',
+                messages: [
+                  {
+                    role: 'user',
+                    content: message
+                  }
+                ],
+                temperature: 0.7,
+                agentId: agentId
+              }
+            };
+            ws.send(JSON.stringify(chatRequest));
+            
+            // 监听聊天响应
+            ws.on('message', (chatData) => {
+              try {
+                const chatMessage = JSON.parse(chatData);
+                if (chatMessage.type === 'res' && chatMessage.id === chatRequestId) {
+                  if (chatMessage.ok) {
+                    if (chatMessage.payload?.choices && chatMessage.payload.choices.length > 0) {
+                      resolve(chatMessage.payload.choices[0].message.content);
+                    } else {
+                      resolve(chatMessage.payload || '无响应内容');
+                    }
+                  } else {
+                    reject(new Error(`聊天失败: ${chatMessage.error?.message || '未知错误'}`));
+                  }
+                  ws.close();
+                }
+              } catch (error) {
+                console.error('聊天消息处理错误:', error);
+                reject(new Error(`消息处理错误: ${error.message}`));
+                ws.close();
+              }
+            });
+          } else {
+            reject(new Error(`连接失败: ${wsMessage.error?.message || '未知错误'}`));
+            ws.close();
+          }
+        }
+      } catch (error) {
+        console.error('WebSocket消息处理错误:', error);
+        reject(new Error(`消息处理错误: ${error.message}`));
+        ws.close();
+      }
+    });
+
+    ws.on('error', (error) => {
+      reject(new Error(`WebSocket错误: ${error.message}`));
+    });
+
+    ws.on('close', () => {
+      if (!connected) {
+        reject(new Error('WebSocket连接失败'));
+      }
+    });
+
+    // 超时处理
+    setTimeout(() => {
+      if (!challengeReceived) {
+        reject(new Error('Gateway连接超时'));
+        ws.close();
+      }
+    }, 5000);
+  });
+}
+
 ipcMain.handle("send-message", async (e, {framework, agentId, message}) => {
   try {
     if (framework === "openclaw") {
+      // 首先检查OpenClaw是否安装
       const openClawPath = getOpenClawPath();
+      const openclawBat = path.join(openClawPath, 'openclaw.bat');
+      const mainPy = path.join(openClawPath, 'main.py');
+      const openclawSh = path.join(openClawPath, 'openclaw.sh');
       
-      // 清理环境变量，避免nvm冲突
-      const env = { ...process.env };
-      delete env.npm_config_prefix;
+      if (!fs.existsSync(openclawBat) && !fs.existsSync(mainPy) && !fs.existsSync(openclawSh)) {
+        throw new Error('OpenClaw is not installed. Please install OpenClaw first.');
+      }
       
-      const proc = spawnOpenClawAgent(message, agentId, openClawPath);
-      proc.env = env;
-      
-      let out = "";
-      proc.stdout.on("data", d => out += d);
-      proc.stderr.on("data", d => out += d);
-      
-      return new Promise((resolve, reject) => {
-        proc.on("close", c => c === 0 ? resolve(out) : reject(new Error(out)));
-        proc.on("error", (error) => {
-          reject(new Error(`Error executing OpenClaw: ${error.message}`));
+      // 检查Gateway是否运行
+      const isGatewayRunning = await new Promise((resolve) => {
+        const req = http.get('http://localhost:18789/health', (res) => {
+          resolve(res.statusCode === 200);
         });
+        req.on('error', () => {
+          resolve(false);
+        });
+        req.end();
       });
+
+      if (!isGatewayRunning) {
+        try {
+          // 启动Gateway
+          const result = await startOpenClawGateway();
+          if (!result.success) {
+            throw new Error('Failed to start OpenClaw Gateway');
+          }
+        } catch (gatewayError) {
+          throw new Error(`Failed to start OpenClaw Gateway: ${gatewayError.message}`);
+        }
+      }
+
+      // 通过Gateway发送消息
+      return await sendMessageToOpenClawViaGateway(agentId, message);
     } else if (framework === "zeroclaw") {
       const home = homedir();
       const zeroClawPath = path.join(home, 'Documents/trae_projects/zeroclaw_test/zeroclaw-main/target/release-fast/zeroclaw');

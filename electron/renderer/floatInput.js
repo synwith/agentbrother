@@ -105,7 +105,19 @@ async function sendMessage() {
     }
   } catch (error) {
     loadingMessage.remove();
-    addMessage('assistant', `错误: ${error.message}`, currentFramework, currentAgent);
+    // 显示友好的错误消息
+    let errorMessage = error.message || '发送消息失败';
+    
+    // 处理常见错误
+    if (errorMessage.includes('not installed')) {
+      errorMessage = 'OpenClaw 未安装，请先安装 OpenClaw';
+    } else if (errorMessage.includes('Failed to start OpenClaw Gateway')) {
+      errorMessage = '无法启动 OpenClaw Gateway，请检查 OpenClaw 安装';
+    } else if (errorMessage.includes('Agent not found')) {
+      errorMessage = '找不到指定的代理，请检查代理配置';
+    }
+    
+    addMessage('assistant', `错误: ${errorMessage}`, currentFramework, currentAgent);
   }
   
   // 发送完成后清除文件内容

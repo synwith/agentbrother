@@ -38,6 +38,38 @@
 - **实时通信**：支持与 Agent 的实时交互
 - **本地文件解析**：在本地解析文件内容，节省 Token 消耗
 
+## 界面截图
+
+### 主界面
+<p align="center">
+  <img src="asset/screenshot/1.png" alt="主界面" width="800">
+</p>
+
+### 代理管理
+<p align="center">
+  <img src="asset/screenshot/2.png" alt="代理管理" width="800">
+</p>
+
+### 配置消耗
+<p align="center">
+  <img src="asset/screenshot/3.png" alt="配置消耗" width="800">
+</p>
+
+### 浮点输入
+<p align="center">
+  <img src="asset/screenshot/4.png" alt="浮点输入" width="800">
+</p>
+
+### 代理详情
+<p align="center">
+  <img src="asset/screenshot/5.png" alt="代理详情" width="800">
+</p>
+
+### 任务管理
+<p align="center">
+  <img src="asset/screenshot/6.png" alt="任务管理" width="800">
+</p>
+
 ## 快速开始
 
 ### 环境要求
