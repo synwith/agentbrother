@@ -16,7 +16,6 @@ const __dirname = path.dirname(__filename);
 let mainWindow = null;
 let frameworkStatus = { openclaw: { installed: false, path: "" }, zeroclaw: { installed: false, path: "" } };
 let agentBrother = null;
-process.env.ARK_API_KEY = "822b7a71-6416-4e4d-80a3-8db47830bbca";
 
 // 禁用GPU加速，解决Mac上的启动问题
 app.disableHardwareAcceleration();

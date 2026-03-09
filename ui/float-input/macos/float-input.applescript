@@ -52,7 +52,7 @@ if selectedFramework is "OpenClaw" then
     set curlCmd to "cd ~/Documents/trae_projects/openclaw_test && ./openclaw.sh agent -m '" & userPrompt & "' --agent " & selectedAgent
 else
     -- ZeroClaw
-    set curlCmd to "ARK_API_KEY=822b7a71-6416-4e4d-80a3-8db47830bbca ~/Documents/trae_projects/zeroclaw_test/zeroclaw-main/target/release-fast/zeroclaw agent --message '" & userPrompt & "'"
+    set curlCmd to "~/Documents/trae_projects/zeroclaw_test/zeroclaw-main/target/release-fast/zeroclaw agent --message '" & userPrompt & "'"
 end if
 
 -- 执行命令
