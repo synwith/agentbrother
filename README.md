@@ -4,6 +4,8 @@
 
 **[中文](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)**
 
+**官网：[https://agentbrother.cn](https://agentbrother.cn)**
+
 # 龙哥（AgentBrother）
 
 它本来是奔着跨平台 Agent 管理框架 - 统一对接 OpenClaw、ZeroClaw 等 Agent 框架，然后再在上面加一层应用框架，方便用户所见即所得创建 AI 数字员工等智能体。而不需要管理底层配置，只需要在应用层配置即可。
